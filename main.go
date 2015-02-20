@@ -35,6 +35,7 @@ func main() {
 }
 
 func GetQuoteFromService() string {
+	// dial via tcp to the specified url in the flag
 	return ""
 }
 
