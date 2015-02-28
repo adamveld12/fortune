@@ -35,7 +35,9 @@ func main() {
 }
 
 func GetQuoteFromService() string {
-	// dial via tcp to the specified url in the flag
+	// dial via tcp to the QOTD service
+	// the spec says that we should receive
+	// a quote immediately on connect
 	return ""
 }
 
@@ -44,7 +46,9 @@ func GetQuoteFromFile() string {
 	data, err := ioutil.ReadFile(filePath)
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println("The specified file at", filePath, "does not exist.")
+		fmt.Println("Specify a file with -f.")
+		return
 	}
 
 	text := strings.Split(string(data), "%")
