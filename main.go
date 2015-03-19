@@ -48,7 +48,7 @@ func GetQuoteFromFile() string {
 	if err != nil {
 		fmt.Println("The specified file at", filePath, "does not exist.")
 		fmt.Println("Specify a file with -f.")
-		return
+		return ""
 	}
 
 	text := strings.Split(string(data), "%")
