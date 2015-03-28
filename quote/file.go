@@ -1,10 +1,14 @@
 package quote
 
 import (
+	"bufio"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -17,10 +21,49 @@ func File(p string) (string, error) {
 	return readFromRawFile(p)
 }
 
-// GeneratesIndex Generates  an index file for the file p and saves it at the app's current directory
+type indexEntry struct {
+	start, end int32
+}
+
+// GeneratesIndex Generates an index file for the file p and saves it at the app's current directory
 // Returns an error if the index file could not be written to, or if the source file is not correct
-func GenerateIndex(p string) (string, error) {
-	return "", nil
+func GenerateIndex(p string) error {
+	file, err := os.Open(p)
+
+	if err != nil {
+		return errors.New(fmt.Sprint("The file at", p, "does not exist. Specify a file with -f."))
+	}
+
+	defer file.Close()
+
+	dir, name := filepath.Split(p)
+	indexFileName := filepath.Join(dir, strings.TrimSuffix(name, filepath.Ext(name))+".index")
+
+	indexFile, err := os.Create(indexFileName)
+
+	if err != nil {
+		return errors.New(fmt.Sprint("The file at", p, "does not exist. Specify a file with -f."))
+	}
+
+	defer indexFile.Close()
+
+	reader := bufio.NewReader(file)
+	var position int32
+
+	for {
+		line, err := reader.ReadBytes('%')
+
+		if err != nil {
+			return err
+		}
+
+		end := position + int32(len(line))
+		binary.Write(indexFile, binary.LittleEndian, position)
+
+		position = end
+	}
+
+	return nil
 }
 
 func hasIndex(p string) bool {
@@ -28,6 +71,16 @@ func hasIndex(p string) bool {
 }
 
 func readFromIndex(p string) (string, error) {
+	dir, name := filepath.Split(p)
+	indexFileName := filepath.Join(dir, strings.TrimSuffix(name, filepath.Ext(name))+".index")
+
+	file, err := os.Open(indexFileName)
+
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
 	return "", nil
 }
 
