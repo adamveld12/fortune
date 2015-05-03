@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -44,6 +45,8 @@ func GenerateIndex(p string) error {
 	if err != nil {
 		return errors.New(fmt.Sprint("The file at", p, "does not exist. Specify a file with -f."))
 	}
+
+	log.Println("writing index file to ", indexFileName)
 
 	defer indexFile.Close()
 
