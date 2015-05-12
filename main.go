@@ -55,7 +55,7 @@ func main() {
 		var err error
 
 		if serverUrl != "" {
-			quoteString = GetQuoteFromService()
+			quoteString, err = quote.TCPService(serverUrl)
 		} else {
 			quoteString, err = quote.File(filePath)
 		}
@@ -67,11 +67,4 @@ func main() {
 			time.Sleep(wait)
 		}
 	}
-}
-
-func GetQuoteFromService() string {
-	// dial via tcp to the QOTD service
-	// the spec says that we should receive
-	// a quote immediately on connect
-	return ""
 }

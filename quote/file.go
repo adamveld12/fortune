@@ -2,9 +2,11 @@ package quote
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -22,8 +24,16 @@ func File(p string) (string, error) {
 	return readFromRawFile(p)
 }
 
-type indexEntry struct {
-	start, end int32
+func hasIndex(p string) bool {
+	dir, name := filepath.Split(p)
+	indexFileName := filepath.Join(dir, strings.TrimSuffix(name, filepath.Ext(name))+".index")
+	f, err := os.Open(indexFileName)
+
+	if err == nil {
+		defer f.Close()
+	}
+
+	return os.IsExist(err)
 }
 
 // GeneratesIndex Generates an index file for the file p and saves it at the app's current directory
@@ -51,7 +61,8 @@ func GenerateIndex(p string) error {
 	defer indexFile.Close()
 
 	reader := bufio.NewReader(file)
-	var position int32
+	position := 0
+	count := 0
 
 	for {
 		line, err := reader.ReadBytes('%')
@@ -60,31 +71,64 @@ func GenerateIndex(p string) error {
 			return err
 		}
 
-		end := position + int32(len(line))
 		binary.Write(indexFile, binary.LittleEndian, position)
-
-		position = end
+		binary.Write(indexFile, binary.LittleEndian, len(line))
+		position += len(line)
+		count++
 	}
+
+	binary.Write(indexFile, binary.LittleEndian, count)
 
 	return nil
 }
 
-func hasIndex(p string) bool {
-	return false
-}
-
 func readFromIndex(p string) (string, error) {
-	dir, name := filepath.Split(p)
-	indexFileName := filepath.Join(dir, strings.TrimSuffix(name, filepath.Ext(name))+".index")
+	indexFile := openIndex(p)
+	defer indexFile.Close()
 
-	file, err := os.Open(indexFileName)
+	// read length
+	quoteCount := indexQuoteCount(indexFile)
 
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
+	// generate a rand number between 0 -> length
+	rand.Seed(time.Now().UnixNano())
+	quoteIdx := rand.Int32n()
+	// read index and length in the index from that position
+	// open actual quote file
+	// read quote starting at pos
 
 	return "", nil
+}
+
+func indexQuoteCount(indexFile *os.File) int {
+	size := binary.Size(4)
+	fileLengthIdx, err := indexFile.Seek(int64(size), 2)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fileLengthBytes := make([]byte, size)
+	_, err = indexFile.ReadAt(fileLengthBytes, fileLengthIdx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var fileLength int
+	err = binary.Read(indexFile, binary.LittleEndian, fileLength)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return fileLength
+}
+
+func openIndex(p string) *os.File {
+	dir, name := filepath.Split(p)
+	indexFileName := filepath.Join(dir, strings.TrimSuffix(name, filepath.Ext(name))+".index")
+	indexFile, err := os.Open(indexFileName)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return indexFile
 }
 
 func readFromRawFile(p string) (string, error) {
