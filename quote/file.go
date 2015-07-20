@@ -17,7 +17,7 @@ import (
 // File loads a random quote from the file p and returns it
 // checks if an index file exists as "{p}.index", and if so uses it
 // Returns an error if the file cannot be opened, or if the format is not correct
-func File(p string) (string, error) {
+func file(p string) (string, error) {
 	// check if an index file exists
 	return readFromRawFile(p)
 }
