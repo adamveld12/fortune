@@ -2,11 +2,9 @@ package quote
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -87,11 +85,11 @@ func readFromIndex(p string) (string, error) {
 	defer indexFile.Close()
 
 	// read length
-	quoteCount := indexQuoteCount(indexFile)
+	//	quoteCount := indexQuoteCount(indexFile)
 
 	// generate a rand number between 0 -> length
-	rand.Seed(time.Now().UnixNano())
-	quoteIdx := rand.Int32n()
+	//	rand.Seed(time.Now().UnixNano())
+	//	quoteIdx := rand.Int32n()
 	// read index and length in the index from that position
 	// open actual quote file
 	// read quote starting at pos
