@@ -3,20 +3,16 @@ package server
 import (
 	"errors"
 	"fmt"
-	"github.com/adamveld12/fortune/quote"
 	"log"
 	"net"
-)
 
-const (
-	CONN_HOST = "localhost"
-	CONN_TYPE = "tcp"
+	"github.com/adamveld12/fortune/quote"
 )
 
 type Listener func(int, string) error
 
-func Tcp(port int, quoteFile string) error {
-	l, err := net.Listen(CONN_TYPE, fmt.Sprintf(":%d", port))
+func fromTcp(port int, quoteFile string) error {
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 
 	if err != nil {
 		log.Fatal(err)
@@ -37,7 +33,7 @@ func Tcp(port int, quoteFile string) error {
 
 func handleConn(quoteFile string, conn net.Conn) {
 	defer conn.Close()
-	quote, err := quote.File(quoteFile)
+	quote, err := quote.Find(quoteFile)
 
 	if err != nil {
 		log.Println("Error occurred reading quote from file: ", quoteFile)
