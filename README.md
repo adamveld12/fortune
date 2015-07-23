@@ -24,21 +24,33 @@ Behind every argument is someone's ignorance.
 
 If you want a random quote:
 ```sh
-  fortune
+  fortune  # defaults to fortunes.txt
 ```
 
 If you want to use a specific file:
 ```sh
-  fortune -file="quotes.txt"
+  fortune quotes.txt
 ```
 
-If you want to delay process termination:
+If you want to delay termination:
 ```sh 
   fortune -wait=1.2s #( use ms for miliseconds, s for seconds, m for minutes etc)
 ```
+
+If you want to generate an index file:
+```sh
+  fortune -generateIndex fortunes.txt  # Generates a fortunes.txt.index
+```
+
+*Note* Fortune will automatically look for a .index file in the same directory as the specified fortune and use it if it exists.
+
 
 and if you want to see help text:
 ```sh
   fortune -h
 ```
+
+## License
+
+[WTFPL](http://www.wtfpl.net/)
 
