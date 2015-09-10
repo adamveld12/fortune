@@ -2,6 +2,8 @@
 the person who can question the answers."
         ― Theodore Schick Jr., in The_Skeptical_Inquirer, March/April, 1997
 %
+Individuals pick good passwords, but people pick bad ones. This is not going to change.
+%
 "A little fire, Scarecrow?"
 %
 "A programmer is a person who passes as an exacting expert on the basis of
